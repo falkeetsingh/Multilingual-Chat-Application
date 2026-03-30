@@ -75,7 +75,7 @@ export default function ChatPanel({
         })}
       </div>
 
-      <form className="border-t border-white/50 p-4" onSubmit={send}>
+      <form className="sticky bottom-0 z-10 border-t border-white/50 bg-white/80 p-4 backdrop-blur" onSubmit={send}>
         <div className="flex gap-2">
           <input
             value={draft}

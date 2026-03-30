@@ -28,12 +28,27 @@ const translateWithGoogleApi = async ({ text, targetLanguage, sourceLanguage }) 
   const client = getTranslateClient();
 
   if (client) {
-    const [translatedText] = await client.translate(text, {
-      to: targetLanguage,
-      ...(sourceLanguage ? { from: sourceLanguage } : {}),
-    });
+    try {
+      const [translatedText] = await client.translate(text, {
+        to: targetLanguage,
+        ...(sourceLanguage ? { from: sourceLanguage } : {}),
+      });
 
-    return translatedText;
+      if (
+        sourceLanguage &&
+        sourceLanguage !== targetLanguage &&
+        translatedText === text
+      ) {
+        const [autoDetectedTranslation] = await client.translate(text, {
+          to: targetLanguage,
+        });
+        return autoDetectedTranslation;
+      }
+
+      return translatedText;
+    } catch (error) {
+      console.warn('Service-account translation failed, trying API key fallback:', error.message);
+    }
   }
 
   const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
@@ -73,6 +88,34 @@ const translateWithGoogleApi = async ({ text, targetLanguage, sourceLanguage }) 
 
   if (!translation) {
     throw new Error('Google Translate API returned empty translation');
+  }
+
+  if (sourceLanguage && sourceLanguage !== targetLanguage && translation === text) {
+    const retryResponse = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: text,
+        target: targetLanguage,
+        format: 'text',
+      }),
+    });
+
+    if (retryResponse.ok) {
+      const retryData = await retryResponse.json();
+      const retryTranslation =
+        retryData &&
+        retryData.data &&
+        retryData.data.translations &&
+        retryData.data.translations[0] &&
+        retryData.data.translations[0].translatedText;
+
+      if (retryTranslation) {
+        return retryTranslation;
+      }
+    }
   }
 
   return translation;

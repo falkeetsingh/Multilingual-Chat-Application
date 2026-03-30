@@ -132,7 +132,13 @@ const initializeSocketServer = (io) => {
           createdAt: newMessage.createdAt,
         };
 
+        const receiverImmediateEvent = {
+          ...senderEvent,
+          pendingTranslation: true,
+        };
+
         io.to(personalRoom).emit('receive_message', senderEvent);
+        io.to(`user:${receiverId}`).emit('receive_message', receiverImmediateEvent);
 
         if (typeof ack === 'function') {
           const receiverSocket = await getUserSocket(receiverId);

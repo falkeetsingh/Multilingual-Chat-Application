@@ -8,12 +8,22 @@ const connectDB = require('./config/db');
 const initializeSocketServer = require('./sockets');
 const { initializeRedis } = require('./redis/client');
 const { startSocketEventsBridge } = require('./sockets/socketEventsBridge');
+const startTranslationWorker = require('./workers/translationWorker');
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
   await initializeRedis();
+
+  const shouldRunWorkerInProcess =
+    (process.env.RUN_TRANSLATION_WORKER_IN_PROCESS || 'true').toLowerCase() === 'true';
+
+  if (shouldRunWorkerInProcess) {
+    startTranslationWorker({ skipBootstrap: true }).catch((error) => {
+      console.error('In-process worker failed:', error.message);
+    });
+  }
 
   const server = http.createServer(app);
   const io = new Server(server, {

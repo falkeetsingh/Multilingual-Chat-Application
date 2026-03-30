@@ -97,14 +97,6 @@ export default function App() {
 
     socket.on('receive_message', (incoming) => {
       setMessages((previous) => {
-        const exists = previous.some(
-          (entry) => (entry._id && entry._id === incoming.messageId) || entry.messageId === incoming.messageId
-        );
-
-        if (exists) {
-          return previous;
-        }
-
         const normalized = normalizeMessage(
           {
             ...incoming,
@@ -113,7 +105,22 @@ export default function App() {
           profile?.preferredLanguage
         );
 
-        return [...previous, normalized];
+        const existingIndex = previous.findIndex((entry) => {
+          const id = entry._id || entry.messageId;
+          return String(id) === String(incoming.messageId);
+        });
+
+        if (existingIndex === -1) {
+          return [...previous, normalized];
+        }
+
+        const updated = [...previous];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          ...normalized,
+        };
+
+        return updated;
       });
     });
 
@@ -316,7 +323,7 @@ export default function App() {
         <div className="mb-3 rounded-xl bg-red-600 px-4 py-3 text-sm text-white">{error}</div>
       ) : null}
 
-      <section className="grid h-[calc(100vh-1rem)] overflow-hidden rounded-3xl border border-white/50 shadow-2xl md:grid-cols-[340px_1fr]">
+      <section className="grid min-h-[calc(100vh-1rem)] overflow-visible rounded-3xl border border-white/50 shadow-2xl md:h-[calc(100vh-1rem)] md:grid-cols-[340px_1fr] md:overflow-hidden">
         <Sidebar
           profile={profile}
           users={users}
