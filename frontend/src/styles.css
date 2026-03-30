@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f5efe6;
+  --ink: #1e1a16;
+  --accent: #0d8b8b;
+  --accent-2: #ef7e56;
+  --panel: rgba(255, 255, 255, 0.82);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(13, 139, 139, 0.2), transparent 35%),
+    radial-gradient(circle at 85% 15%, rgba(239, 126, 86, 0.16), transparent 35%),
+    linear-gradient(140deg, #f7f2ea 0%, #efe8db 55%, #e8dece 100%);
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+}
+
+.glass {
+  backdrop-filter: blur(12px);
+  background: var(--panel);
+}
+
+.fade-in {
+  animation: fadeIn 0.45s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

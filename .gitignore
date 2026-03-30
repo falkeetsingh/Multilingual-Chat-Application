@@ -1,0 +1,42 @@
+# Dependencies
+**/node_modules/
+
+# Build artifacts
+**/dist/
+**/build/
+**/.cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Service account and credential files
+*credentials*.json
+*service-account*.json
+*secret*.json
+*translation-api*.json
+
+# Logs and local runtime files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.pid
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
