@@ -45,7 +45,7 @@ export default function ChatPanel({
         {typingText ? <p className="mt-2 text-xs text-[#0d8b8b]">{typingText}</p> : null}
       </header>
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-auto p-5">
+      <div className="min-h-0 flex-1 space-y-3 overflow-auto p-5 pb-20">
         {messages.map((message) => {
           const fromMe = message.senderId === profile.id || message.senderId?._id === profile.id;
 
