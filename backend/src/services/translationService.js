@@ -10,7 +10,9 @@ const getTranslateClient = () => {
     return translateClient;
   }
 
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  const credentialsInput = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  
+  if (!credentialsInput) {
     return null;
   }
 
@@ -18,6 +20,15 @@ const getTranslateClient = () => {
 
   if (process.env.GOOGLE_CLOUD_PROJECT) {
     clientOptions.projectId = process.env.GOOGLE_CLOUD_PROJECT;
+  }
+
+  // Try to parse as JSON string first
+  try {
+    const credentialsObject = JSON.parse(credentialsInput);
+    clientOptions.credentials = credentialsObject;
+  } catch (parseError) {
+    // If parsing fails, treat it as a file path (default Google Cloud SDK behavior)
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsInput;
   }
 
   translateClient = new Translate(clientOptions);
